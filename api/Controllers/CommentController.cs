@@ -60,7 +60,7 @@ namespace api.Controllers
 
             var commentModel = commentDto.ToCommentFromCreate(stockId);
             await _commentRepo.CreateAsync(commentModel);
-            return CreatedAtAction(nameof(GetById), new { id = commentModel}, commentModel.ToCommentDto());
+            return CreatedAtAction(nameof(GetById), new { id = commentModel.Id}, commentModel.ToCommentDto());
         }
 
         [HttpPut]
@@ -69,14 +69,14 @@ namespace api.Controllers
         {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var commentModel = await _commentRepo.UpdateAsync(id, updateDto);
+            var comment = await _commentRepo.UpdateAsync(id, updateDto.ToCommentFromUpdate());
 
-            if(commentModel == null)
+            if(comment == null)
             {
-                return NotFound();
+                return NotFound("Comment not found");
             }
         
-            return Ok(commentModel.ToCommentDto());
+            return Ok(comment.ToCommentDto());
 
         }
 
